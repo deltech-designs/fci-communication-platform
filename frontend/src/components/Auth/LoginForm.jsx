@@ -1,54 +1,41 @@
-// src/components/Auth/LoginForm.js
+// src/components/Auth/LoginForm.jsx
 import React, { useState } from "react";
-import { loginUser } from "../../api/api";
 import { useNavigate } from "react-router-dom";
+import { loginUser } from "../../api/api";
 
-const LoginForm = ({ onLogin }) => {
-  const [credentials, setCredentials] = useState({ email: "", password: "" });
+const LoginForm = ({ onLoginSuccess }) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await loginUser(credentials);
-      localStorage.setItem("token", data.token);
-      onLogin(data.user);
+      const { data } = await loginUser({ email, password });
+      localStorage.setItem("token", data.token); // Store the JWT token
+      onLoginSuccess(data.user); // Pass user data to parent component
       navigate("/chat");
     } catch (error) {
-      alert(error.response?.data.message || "Login failed");
+      console.error("Login error:", error);
+      alert("Login failed. Please try again.");
     }
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="p-4 max-w-md mx-auto bg-white shadow-md rounded"
-    >
-      <h2 className="text-lg font-bold">Login</h2>
+    <form onSubmit={handleLogin}>
       <input
         type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
         placeholder="Email"
-        className="border p-3 rounded-md"
-        value={credentials.email}
-        onChange={(e) =>
-          setCredentials({ ...credentials, email: e.target.value })
-        }
       />
       <input
         type="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
         placeholder="Password"
-        className="border p-3 rounded-md"
-        value={credentials.password}
-        onChange={(e) =>
-          setCredentials({ ...credentials, password: e.target.value })
-        }
       />
-      <button
-        type="submit"
-        className="w-full mt-4 bg-blue-500 text-white py-2 rounded"
-      >
-        Login
-      </button>
+      <button type="submit">Login</button>
     </form>
   );
 };

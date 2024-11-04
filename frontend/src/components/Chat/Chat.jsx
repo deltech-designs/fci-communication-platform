@@ -1,13 +1,11 @@
-// src/components/Chat/ChatDashboard.js
+// src/components/Chat/Chat.jsx
 import React, { useState, useEffect } from "react";
-import ThreadList from "./ThreadList";
-import ThreadView from "./ThreadView";
-import NewThreadForm from "./NewThreadForm";
-import { fetchThreads } from "../../api/api";
+import { fetchThreads, createThread, addMessage } from "../../api/api";
 
-const ChatDashboard = ({ onLogout }) => {
+const Chat = ({ user, onLogout }) => {
   const [threads, setThreads] = useState([]);
   const [selectedThread, setSelectedThread] = useState(null);
+  const [newMessage, setNewMessage] = useState("");
 
   useEffect(() => {
     const loadThreads = async () => {
@@ -15,35 +13,67 @@ const ChatDashboard = ({ onLogout }) => {
         const { data } = await fetchThreads();
         setThreads(data);
       } catch (error) {
-        console.error(error);
+        console.error("Error loading threads:", error);
       }
     };
     loadThreads();
   }, []);
 
+  const handleCreateThread = async (title, participants) => {
+    try {
+      const { data } = await createThread(title, participants);
+      setThreads([...threads, data]);
+      setSelectedThread(data);
+    } catch (error) {
+      console.error("Error creating thread:", error);
+    }
+  };
+
+  const handleSendMessage = async () => {
+    if (!selectedThread) return;
+    try {
+      const { data } = await addMessage(selectedThread._id, newMessage);
+      setSelectedThread((prev) => ({
+        ...prev,
+        messages: [...prev.messages, data],
+      }));
+      setNewMessage("");
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
+  };
+
   return (
-    <div className="flex h-screen">
-      <aside className="w-1/4 p-4 bg-gray-800 text-white">
-        <button
-          onClick={onLogout}
-          className="w-full mb-4 px-4 py-2 bg-red-500 text-white rounded"
-        >
-          Logout
+    <div className="chat-container">
+      <aside className="thread-list">
+        <h3>Threads</h3>
+        {threads.map((thread) => (
+          <button key={thread._id} onClick={() => setSelectedThread(thread)}>
+            {thread.title}
+          </button>
+        ))}
+        <button onClick={() => handleCreateThread("New Thread", [user._id])}>
+          New Thread
         </button>
-        <ThreadList threads={threads} onSelectThread={setSelectedThread} />
       </aside>
-      <main className="flex-1 p-4">
-        {selectedThread ? (
-          <ThreadView thread={selectedThread} />
-        ) : (
-          <p className="text-gray-500">Select a thread to start chatting</p>
+      <main className="thread-content">
+        {selectedThread && (
+          <div>
+            <h4>{selectedThread.title}</h4>
+            {selectedThread.messages.map((msg) => (
+              <p key={msg._id}>{msg.content}</p>
+            ))}
+            <input
+              type="text"
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+            />
+            <button onClick={handleSendMessage}>Send</button>
+          </div>
         )}
       </main>
-      <aside className="w-1/4 p-4 bg-gray-100">
-        <NewThreadForm onCreateThread={(thread) => setSelectedThread(thread)} />
-      </aside>
     </div>
   );
 };
 
-export default ChatDashboard;
+export default Chat;
