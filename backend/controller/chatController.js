@@ -26,7 +26,7 @@ export const getThreads = async (req, res) => {
 export const addMessage = async (req, res) => {
   try {
     const { threadId, content } = req.body;
-    const thread = await Thread.findById(threadId);
+    const thread = await Thread.findById(xthreadId);
 
     if (!thread) return res.status(404).json({ message: "Thread not found" });
 
