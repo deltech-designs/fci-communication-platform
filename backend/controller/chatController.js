@@ -1,29 +1,41 @@
 // controllers/chatController.js
-const Thread = require("../models/Thread");
+import Thread from "../models/Thread.js";
 
-const getThreads = async (req, res) => {
-  const threads = await Thread.find({ createdBy: req.user.id });
-  res.json(threads);
+export const createThread = async (req, res) => {
+  try {
+    const { title, participants } = req.body;
+    const newThread = await Thread.create({ title, participants });
+    res.status(201).json(newThread);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to create thread", error });
+  }
 };
 
-const createThread = async (req, res) => {
-  const { title } = req.body;
-  const thread = await Thread.create({
-    title,
-    createdBy: req.user.id,
-    messages: [],
-  });
-  res.status(201).json(thread);
+export const getThreads = async (req, res) => {
+  try {
+    const threads = await Thread.find({ participants: req.user._id }).populate(
+      "participants",
+      "name"
+    );
+    res.json(threads);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch threads", error });
+  }
 };
 
-const addMessage = async (req, res) => {
-  const { content, sender } = req.body;
-  const thread = await Thread.findById(req.params.id);
-  if (!thread) return res.status(404).json({ error: "Thread not found" });
+export const addMessage = async (req, res) => {
+  try {
+    const { threadId, content } = req.body;
+    const thread = await Thread.findById(threadId);
 
-  thread.messages.push({ content, sender });
-  await thread.save();
-  res.status(201).json(thread);
+    if (!thread) return res.status(404).json({ message: "Thread not found" });
+
+    const message = { sender: req.user._id, content };
+    thread.messages.push(message);
+    await thread.save();
+
+    res.status(201).json(message);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to add message", error });
+  }
 };
-
-module.exports = { getThreads, createThread, addMessage };

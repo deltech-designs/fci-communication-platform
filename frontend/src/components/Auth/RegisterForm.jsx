@@ -1,52 +1,56 @@
-// src/components/Auth/RegisterForm.jsx
+// src/components/Auth/RegisterForm.js
 import React, { useState } from "react";
+import { registerUser } from "../../api/api";
 import { useNavigate } from "react-router-dom";
-import api from "../../utils/api";
 
 const RegisterForm = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
   const navigate = useNavigate();
 
-  const handleRegister = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await api.post("/auth/register", { name, email, password });
-      alert("Registration successful. Please log in.");
-      navigate("/login"); // Redirect to login page after registration
+      await registerUser(formData);
+      navigate("/chat");
     } catch (error) {
-      alert("Registration failed.");
+      alert(error.response?.data.message || "Registration failed");
     }
   };
 
   return (
-    <form onSubmit={handleRegister} className="flex flex-col space-y-4">
-      <h2 className="text-2xl font-bold text-center">Register</h2>
+    <form
+      onSubmit={handleSubmit}
+      className="p-4 max-w-md mx-auto bg-white shadow-md rounded flex flex-col gap-4"
+    >
+      <h2 className="text-lg font-bold">Register</h2>
       <input
         type="text"
         placeholder="Name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        className="p-2 border rounded"
+        value={formData.name}
+        className="border p-3 rounded-md"
+        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
       />
       <input
         type="email"
         placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        className="p-2 border rounded"
+        className="border p-3 rounded-md"
+        value={formData.email}
+        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
       />
       <input
         type="password"
         placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        className="p-2 border rounded"
+        className="border p-3 rounded-md"
+        value={formData.password}
+        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
       />
       <button
         type="submit"
-        className="px-4 py-2 bg-blue-500 text-white rounded"
+        className="w-full mt-4 bg-blue-500 text-white py-2 rounded"
       >
         Register
       </button>

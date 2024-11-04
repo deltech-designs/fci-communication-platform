@@ -1,19 +1,21 @@
 // models/Thread.js
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
-const ThreadSchema = new mongoose.Schema(
+const messageSchema = new mongoose.Schema(
   {
-    title: String,
-    messages: [
-      {
-        content: String,
-        sender: String, // 'user' or 'bot'
-        timestamp: { type: Date, default: Date.now },
-      },
-    ],
-    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    sender: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    content: { type: String, required: true },
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Thread", ThreadSchema);
+const threadSchema = new mongoose.Schema(
+  {
+    title: { type: String, required: true },
+    participants: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    messages: [messageSchema],
+  },
+  { timestamps: true }
+);
+
+export default mongoose.model("Thread", threadSchema);

@@ -1,15 +1,16 @@
 // routes/chatRoutes.js
-const express = require("express");
-const {
+import express from "express";
+import {
+  createThread,
   getThreads,
   addMessage,
-  createThread,
-} = require("../controller/chatController");
-const { protect } = require("../middleware/authMiddleware");
+} from "../controllers/chatController.js";
+import { authenticate } from "../middleware/authMiddleware.js";
+
 const router = express.Router();
 
-router.get("/threads", protect, getThreads); // Get all threads for a user
-router.post("/threads", protect, createThread); // Create a new thread
-router.post("/threads/:id/message", protect, addMessage); // Add a message to a thread
+router.post("/create", authenticate, createThread);
+router.get("/threads", authenticate, getThreads);
+router.post("/message", authenticate, addMessage);
 
-module.exports = router;
+export default router;

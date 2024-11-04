@@ -1,45 +1,51 @@
-// src/components/Auth/LoginForm.jsx
+// src/components/Auth/LoginForm.js
 import React, { useState } from "react";
+import { loginUser } from "../../api/api";
 import { useNavigate } from "react-router-dom";
-import api from "../../utils/api";
 
-const LoginForm = ({ onLoginSuccess }) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+const LoginForm = ({ onLogin }) => {
+  const [credentials, setCredentials] = useState({ email: "", password: "" });
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await api.post("/auth/login", { email, password });
-      localStorage.setItem("token", data.token); // Save token in localStorage
-      onLoginSuccess(data.user); // Pass user data to parent component
-      navigate("/chat"); // Redirect to chat after successful login
+      const { data } = await loginUser(credentials);
+      localStorage.setItem("token", data.token);
+      onLogin(data.user);
+      navigate("/chat");
     } catch (error) {
-      alert("Login failed. Check your credentials.");
+      alert(error.response?.data.message || "Login failed");
     }
   };
 
   return (
-    <form onSubmit={handleLogin} className="flex flex-col space-y-4">
-      <h2 className="text-2xl font-bold text-center">Login</h2>
+    <form
+      onSubmit={handleSubmit}
+      className="p-4 max-w-md mx-auto bg-white shadow-md rounded"
+    >
+      <h2 className="text-lg font-bold">Login</h2>
       <input
         type="email"
         placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        className="p-2 border rounded"
+        className="border p-3 rounded-md"
+        value={credentials.email}
+        onChange={(e) =>
+          setCredentials({ ...credentials, email: e.target.value })
+        }
       />
       <input
         type="password"
         placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        className="p-2 border rounded"
+        className="border p-3 rounded-md"
+        value={credentials.password}
+        onChange={(e) =>
+          setCredentials({ ...credentials, password: e.target.value })
+        }
       />
       <button
         type="submit"
-        className="px-4 py-2 bg-blue-500 text-white rounded"
+        className="w-full mt-4 bg-blue-500 text-white py-2 rounded"
       >
         Login
       </button>
