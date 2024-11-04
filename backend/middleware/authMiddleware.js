@@ -1,10 +1,17 @@
-// routes/authRoutes.js
-import express from "express";
-import { register, login } from "../controllers/authController.js";
+// middleware/authMiddleware.js
+import jwt from "jsonwebtoken";
+import User from "../models/User.js";
 
-const router = express.Router();
+export const authenticate = async (req, res, next) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token)
+    return res.status(401).json({ message: "No token, authorization denied" });
 
-router.post("/register", register);
-router.post("/login", login);
-
-export default router;
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = await User.findById(decoded.userId).select("-password");
+    next();
+  } catch (error) {
+    res.status(401).json({ message: "Invalid token" });
+  }
+};

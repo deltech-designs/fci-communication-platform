@@ -4,7 +4,7 @@ import {
   createThread,
   getThreads,
   addMessage,
-} from "../controllers/chatController.js";
+} from "../controller/chatController.js";
 import { authenticate } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
