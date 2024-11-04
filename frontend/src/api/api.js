@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://fci-communication-platform-api.onrender.com",
+  baseURL: "https://fci-communication-platform-api.onrender.com/api",
   headers: {
     "Content-Type": "application/json",
   },
