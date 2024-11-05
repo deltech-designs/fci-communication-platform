@@ -26,10 +26,10 @@ export const loginUser = async (credentials) => {
 };
 
 // Chat endpoints
-export const fetchThreads = () => api.get("/chat/threads");
+export const fetchThreads = () => api.get("/api/chat/threads");
 export const createThread = (title, participants) =>
   api.post("/api/chat/create", { title, participants });
 export const addMessage = (threadId, content) =>
-  api.post("/chat/message", { threadId, content });
+  api.post("/api/chat/message", { threadId, content });
 
 export default api;
