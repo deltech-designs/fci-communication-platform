@@ -22,7 +22,7 @@ const LoginForm = ({ onLoginSuccess }) => {
   };
 
   return (
-    <form onSubmit={handleLogin}>
+    <form className="flex flex-col bg-white" onSubmit={handleLogin}>
       <input
         type="email"
         value={email}

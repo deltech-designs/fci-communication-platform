@@ -23,10 +23,27 @@ export const getThreads = async (req, res) => {
   }
 };
 
+// export const addMessage = async (req, res) => {
+//   try {
+//     const { threadId, content } = req.body;
+//     const thread = await Thread.findById(threadId);
+
+//     if (!thread) return res.status(404).json({ message: "Thread not found" });
+
+//     const message = { sender: req.user._id, content };
+//     thread.messages.push(message);
+//     await thread.save();
+
+//     res.status(201).json(message);
+//   } catch (error) {
+//     res.status(500).json({ message: "Failed to add message", error });
+//   }
+// };
+
 export const addMessage = async (req, res) => {
   try {
-    const { threadId, content } = req.body;
-    const thread = await Thread.findById(xthreadId);
+    const { threadId, content } = req.body; // Ensure correct request body
+    const thread = await Thread.findById(threadId); // Corrected typo here
 
     if (!thread) return res.status(404).json({ message: "Thread not found" });
 
@@ -36,6 +53,10 @@ export const addMessage = async (req, res) => {
 
     res.status(201).json(message);
   } catch (error) {
-    res.status(500).json({ message: "Failed to add message", error });
+    console.error("Error adding message:", error); // Log the error details
+    res.status(500).json({
+      message: "Failed to add message",
+      error: error.message || error,
+    });
   }
 };

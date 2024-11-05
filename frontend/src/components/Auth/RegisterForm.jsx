@@ -22,12 +22,16 @@ const RegisterForm = () => {
   };
 
   return (
-    <form onSubmit={handleRegister}>
+    <form
+      className="flex flex-col bg-white shadow-lg mx-auto w-1/2 justify-center items-center p-4 gap-4"
+      onSubmit={handleRegister}
+    >
       <input
         type="text"
         value={name}
         onChange={(e) => setName(e.target.value)}
         placeholder="Name"
+        className="w-4/5 p-3 border rounded outline-none"
       />
       <input
         type="email"
@@ -41,7 +45,9 @@ const RegisterForm = () => {
         onChange={(e) => setPassword(e.target.value)}
         placeholder="Password"
       />
-      <button type="submit">Register</button>
+      <button className="bg-blue-500" type="submit">
+        Register
+      </button>
     </form>
   );
 };

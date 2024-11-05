@@ -19,12 +19,16 @@ api.interceptors.request.use((config) => {
 
 // Auth endpoints
 export const registerUser = (userData) => api.post("/auth/register", userData);
-export const loginUser = (credentials) => api.post("/auth/login", credentials);
+export const loginUser = async (credentials) => {
+  const response = await api.post("/auth/login", credentials);
+  localStorage.setItem("token", response.data.token);
+  return response;
+};
 
 // Chat endpoints
 export const fetchThreads = () => api.get("/chat/threads");
 export const createThread = (title, participants) =>
-  api.post("/chat/create", { title, participants });
+  api.post("/api/chat/create", { title, participants });
 export const addMessage = (threadId, content) =>
   api.post("/chat/message", { threadId, content });
 
