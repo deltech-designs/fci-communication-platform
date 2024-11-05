@@ -18,9 +18,9 @@ api.interceptors.request.use((config) => {
 });
 
 // Auth endpoints
-export const registerUser = (userData) => api.post("/auth/register", userData);
+export const registerUser = (userData) => api.post("/api/auth/register", userData);
 export const loginUser = async (credentials) => {
-  const response = await api.post("/auth/login", credentials);
+  const response = await api.post("/api/auth/login", credentials);
   localStorage.setItem("token", response.data.token);
   return response;
 };
