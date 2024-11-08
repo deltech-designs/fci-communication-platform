@@ -14,7 +14,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://fci-communication-platform-bd4kph47x-deltechdesigns-projects.vercel.app/",
+      "https://fci-communication-platform.vercel.app/",
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
