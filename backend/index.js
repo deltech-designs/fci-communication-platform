@@ -5,8 +5,9 @@ import http from "http";
 import path from "path";
 import { fileURLToPath } from "url";
 import connectDB from "./config/db.js";
-import authRoutes from "./routes/authRoutes.js";
-import chatRoutes from "./routes/chatRoutes.js";
+import router from "./routes/index.js"
+// import authRoutes from "./routes/authRoutes.js";
+// import chatRoutes from "./routes/chatRoutes.js";
 import { initializeSocket } from "./socket.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -29,16 +30,13 @@ app.use(
   })
 );
 
-// Serve uploaded resources
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// Routes
-app.use("/api/auth", authRoutes);
-app.use("/api/chat", chatRoutes);
+app.use("/api/v1", router);
+// app.use("/api/chat", chatRoutes);
 
 const PORT = process.env.PORT || 5000;
 
-// HTTP server and Socket.IO initialization
 const server = http.createServer(app);
 initializeSocket(server);
 
